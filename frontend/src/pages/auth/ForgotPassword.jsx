@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { sendPasswordResetEmail } from "Supabase/auth";
-import { auth } from "../../config/firebase";
 import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
