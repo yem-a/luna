@@ -9,9 +9,13 @@ import Build from "./pages/app/Projects/project-creation/Build";
 import Validate from "./pages/app/Projects/project-creation/Validate";
 import Launch from "./pages/app/Projects/project-creation/Launch";
 import ProjectConfirmation from "./pages/app/Projects/project-creation/ProjectConfirmation";
-import ProjectsHome from "./pages/app/projects/Home"; // Import existing Home component
+import ProjectsHome from "./pages/app/projects/Home";
 import Tasks from "./pages/app/Tasks/Home";
 import Settings from "./pages/app/Settings/Home";
+// Auth imports
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 const App = () => {
   return (
@@ -20,11 +24,16 @@ const App = () => {
         {/* Landing page without MainLayout */}
         <Route path="/" element={<LandingPage />} />
 
+        {/* Auth Routes - without MainLayout */}
+        <Route path="/auth/signin" element={<SignIn />} />
+        <Route path="/auth/signup" element={<SignUp />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+
         {/* All other pages wrapped with MainLayout */}
         <Route element={<MainLayout />}>
           <Route path="/app/home" element={<Home />} />
 
-          {/* Project Routes - both pointing to the same component */}
+          {/* Project Routes */}
           <Route path="/app/projects" element={<ProjectsHome />} />
           <Route path="/app/projects/home" element={<ProjectsHome />} />
 
