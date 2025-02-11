@@ -2,10 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
-const PhaseButton = ({ icon, text, count, isActive }) => (
+const PhaseButton = ({ icon, text, count, isActive, onClick }) => (
   <button
+    onClick={onClick}
     className={`w-full p-3 rounded-lg mb-4 text-left flex items-center
-      ${isActive ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400"}`}
+      ${isActive ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400"}
+      hover:bg-blue-600 transition-colors`}
   >
     <span className="mr-2">{icon}</span>
     <span>{text}</span>
@@ -66,6 +68,28 @@ const Launch = () => {
     { icon: "🚀", text: "Launch", count: 3, isActive: true },
   ];
 
+  const handlePhaseClick = (phase) => {
+    switch (phase) {
+      case "Scope & Stack":
+        navigate("/app/project-creation/scope-stack");
+        break;
+      case "Blueprint":
+        navigate("/app/project-creation/blueprint");
+        break;
+      case "Build":
+        navigate("/app/project-creation/build");
+        break;
+      case "Validate":
+        navigate("/app/project-creation/validate");
+        break;
+      case "Launch":
+        // Already here
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleNext = () => {
     navigate("/app/project-creation/confirmation");
   };
@@ -92,7 +116,11 @@ const Launch = () => {
           <div>
             <h3 className="text-slate-400 text-sm mb-4">PHASES</h3>
             {phases.map((phase, index) => (
-              <PhaseButton key={index} {...phase} />
+              <PhaseButton 
+                key={index} 
+                {...phase} 
+                onClick={() => handlePhaseClick(phase.text)}
+              />
             ))}
           </div>
         </div>
