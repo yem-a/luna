@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus, MoreHorizontal, Command } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import NewTaskModal from "@/components/tasks/NewTaskModal";
 
 const TaskRow = ({
   task,
@@ -84,6 +86,9 @@ const ProjectTaskGroup = ({ title, tasks }) => {
 };
 
 const Tasks = () => {
+  const navigate = useNavigate();
+  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+
   const tasks = {
     "Finance Dashboard": [
       {
@@ -198,6 +203,12 @@ const Tasks = () => {
     ],
   };
 
+  const handleNewTask = (taskData) => {
+    console.log("New task created:", taskData);
+    // Here you would typically handle the new task creation
+    setIsNewTaskModalOpen(false);
+  };
+
   return (
     <div className="flex h-screen bg-slate-950 overflow-hidden">
       <div className="flex-1 p-6 overflow-auto">
@@ -224,7 +235,10 @@ const Tasks = () => {
             </div>
 
             <div className="flex gap-2">
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-full flex items-center">
+              <button
+                onClick={() => setIsNewTaskModalOpen(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-full flex items-center hover:bg-blue-600 transition-colors"
+              >
                 <Plus className="w-4 h-4 mr-1" />
                 Task
               </button>
@@ -299,6 +313,18 @@ const Tasks = () => {
           </div>
         </div>
       </div>
+
+      {/* New Task Modal */}
+      <NewTaskModal
+        isOpen={isNewTaskModalOpen}
+        onClose={() => setIsNewTaskModalOpen(false)}
+        onSave={handleNewTask}
+        projects={[
+          { id: "finance", name: "Finance Dashboard" },
+          { id: "mobile", name: "Mobile App v2" },
+          { id: "marketing", name: "Marketing Website" },
+        ]}
+      />
     </div>
   );
 };

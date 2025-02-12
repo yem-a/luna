@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/layouts/MainLayout";
 import Home from "./pages/app/Home";
 import LandingPage from "./pages/LandingPage";
+
+// Project Creation Imports
 import NewProject from "./pages/app/Projects/project-creation/NewProject";
 import ScopeStack from "./pages/app/Projects/project-creation/ScopeStack";
 import Blueprint from "./pages/app/Projects/project-creation/Blueprint";
@@ -9,9 +11,16 @@ import Build from "./pages/app/Projects/project-creation/Build";
 import Validate from "./pages/app/Projects/project-creation/Validate";
 import Launch from "./pages/app/Projects/project-creation/Launch";
 import ProjectConfirmation from "./pages/app/Projects/project-creation/ProjectConfirmation";
-import ProjectsHome from "./pages/app/projects/Home";
+
+// Projects
+import ProjectsHome from "./pages/app/Projects/Home";
+
+// Tasks
 import Tasks from "./pages/app/Tasks/Home";
+
+// Settings
 import Settings from "./pages/app/Settings/Home";
+
 // Auth imports
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
@@ -31,6 +40,7 @@ const App = () => {
 
         {/* All other pages wrapped with MainLayout */}
         <Route element={<MainLayout />}>
+          {/* Home */}
           <Route path="/app/home" element={<Home />} />
 
           {/* Project Routes */}
@@ -55,8 +65,10 @@ const App = () => {
             element={<ProjectConfirmation />}
           />
 
-          {/* Other App Routes */}
+          {/* Task Routes */}
           <Route path="/app/tasks" element={<Tasks />} />
+
+          {/* Settings */}
           <Route path="/app/settings" element={<Settings />} />
         </Route>
       </Routes>

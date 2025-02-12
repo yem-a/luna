@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import UpdateTaskModal from "@/components/tasks/UpdateTaskModal";
 
 const PhaseButton = ({ icon, text, count, isActive }) => (
   <button
@@ -13,7 +14,7 @@ const PhaseButton = ({ icon, text, count, isActive }) => (
   </button>
 );
 
-const TaskCard = ({ title, description, estimate, priority }) => {
+const TaskCard = ({ title, description, estimate, priority, onClick }) => {
   const getPriorityColor = () => {
     switch (priority) {
       case "high":
@@ -27,7 +28,10 @@ const TaskCard = ({ title, description, estimate, priority }) => {
 
   return (
     <div className="mb-6 relative">
-      <div className="bg-slate-800 p-6 rounded-lg flex">
+      <div
+        className="bg-slate-800 p-6 rounded-lg flex cursor-pointer hover:bg-slate-700 transition-colors"
+        onClick={onClick}
+      >
         <div
           className={`w-1 ${getPriorityColor()} absolute left-0 top-0 bottom-0 rounded-l-lg`}
         />
@@ -57,6 +61,8 @@ const Message = ({ isAi, children }) => (
 
 const Build = () => {
   const navigate = useNavigate();
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const phases = [
     { icon: "🎯", text: "Scope & Stack", count: 4, isActive: false },
@@ -65,6 +71,43 @@ const Build = () => {
     { icon: "✅", text: "Validate", count: 3, isActive: false },
     { icon: "🚀", text: "Launch", count: 3, isActive: false },
   ];
+
+  const handleTaskClick = (title, description, estimate) => {
+    // Create a full task object based on the clicked task
+    const task = {
+      id: `task-${Date.now()}`,
+      title,
+      description,
+      estimate,
+      status: "TODO",
+      priority: "MUST_HAVE",
+      riskLevel: "MEDIUM",
+      riskDescription:
+        title === "Implement Bank Account Connection"
+          ? "OAuth flow complexity and potential security vulnerabilities"
+          : "",
+      mitigationStrategy:
+        title === "Implement Bank Account Connection"
+          ? "Use Plaid's official SDK and follow security best practices"
+          : "",
+      dependencies:
+        title === "Implement Bank Account Connection"
+          ? ["Setup T3 Stack (scope-001)"]
+          : [],
+      tags:
+        title === "Implement Bank Account Connection" ? ["auth", "plaid"] : [],
+    };
+
+    setSelectedTask(task);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleTaskUpdate = (updatedTask) => {
+    console.log("Updated task:", updatedTask);
+    // Here you would typically update your task state or make an API call
+    setIsUpdateModalOpen(false);
+    setSelectedTask(null);
+  };
 
   const handleNext = () => {
     navigate("/app/project-creation/validate");
@@ -126,30 +169,65 @@ const Build = () => {
             description="OAuth flow integration + Account linking"
             estimate="16h"
             priority="high"
+            onClick={() =>
+              handleTaskClick(
+                "Implement Bank Account Connection",
+                "OAuth flow integration + Account linking",
+                "16h"
+              )
+            }
           />
           <TaskCard
             title="Build Transaction Sync Engine"
             description="Real-time transaction fetching + data normalization"
             estimate="8h"
             priority="high"
+            onClick={() =>
+              handleTaskClick(
+                "Build Transaction Sync Engine",
+                "Real-time transaction fetching + data normalization",
+                "8h"
+              )
+            }
           />
           <TaskCard
             title="Create Dashboard UI"
             description="Transaction list + balance overview components"
             estimate="8h"
             priority="medium"
+            onClick={() =>
+              handleTaskClick(
+                "Create Dashboard UI",
+                "Transaction list + balance overview components",
+                "8h"
+              )
+            }
           />
           <TaskCard
             title="Implement Basic Analytics"
             description="Monthly trends + spending categories"
             estimate="6h"
             priority="medium"
+            onClick={() =>
+              handleTaskClick(
+                "Implement Basic Analytics",
+                "Monthly trends + spending categories",
+                "6h"
+              )
+            }
           />
           <TaskCard
             title="Add CSV Export"
             description="Basic transaction export functionality"
             estimate="4h"
             priority="medium"
+            onClick={() =>
+              handleTaskClick(
+                "Add CSV Export",
+                "Basic transaction export functionality",
+                "4h"
+              )
+            }
           />
         </div>
 
@@ -179,6 +257,19 @@ const Build = () => {
           </div>
         </div>
       </div>
+
+      {/* Update Task Modal */}
+      {selectedTask && (
+        <UpdateTaskModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => {
+            setIsUpdateModalOpen(false);
+            setSelectedTask(null);
+          }}
+          onSave={handleTaskUpdate}
+          task={selectedTask}
+        />
+      )}
     </div>
   );
 };
