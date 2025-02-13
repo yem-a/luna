@@ -67,28 +67,6 @@ const Build = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const handlePhaseClick = (phase) => {
-    switch (phase) {
-      case "Scope & Stack":
-        navigate("/app/project-creation/scope-stack");
-        break;
-      case "Blueprint":
-        navigate("/app/project-creation/blueprint");
-        break;
-      case "Build":
-        // Already here
-        break;
-      case "Validate":
-        navigate("/app/project-creation/validate");
-        break;
-      case "Launch":
-        navigate("/app/project-creation/launch");
-        break;
-      default:
-        break;
-    }
-  };
-
   const phases = [
     { icon: "🎯", text: "Scope & Stack", count: 4, isActive: false },
     { icon: "📝", text: "Blueprint", count: 3, isActive: false },
