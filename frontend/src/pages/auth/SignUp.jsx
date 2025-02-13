@@ -1,81 +1,57 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const SignUp = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
-      setError("All fields are required");
-      return false;
-    }
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    if (!validateForm()) return;
-
+    setSuccessMessage("");
     setIsLoading(true);
-    // Simulate account creation
+
+    // Simulate password reset email
     setTimeout(() => {
+      setSuccessMessage("Password reset link has been sent to your email!");
+      setEmail("");
       setIsLoading(false);
-      navigate("/app"); // Redirect to app dashboard after "sign up"
     }, 1000);
   };
 
   return (
-    <div className="max-w-md w-full space-y-8 p-6 bg-secondary rounded-lg shadow-xl mx-auto mt-20">
-      <div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-          Create your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          {`Already have an account? `}
-          <Link
-            to="/signin"
-            className="font-medium text-accent hover:text-accent/90"
-          >
-            Sign in
-          </Link>
-        </p>
-      </div>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <span className="block sm:inline">{error}</span>
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+      <div className="max-w-md w-full space-y-8 p-8 bg-slate-900 rounded-lg">
+        <div>
+          <h2 className="text-center text-3xl font-bold text-white">
+            Reset your password
+          </h2>
+          <p className="mt-2 text-center text-slate-400">
+            Enter your email address and we'll send you a link to reset your
+            password.
+          </p>
         </div>
-      )}
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-        <div className="rounded-md shadow-sm space-y-4">
+        {error && (
+          <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
+            <span className="block sm:inline">{successMessage}</span>
+          </div>
+        )}
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="sr-only">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-slate-400 mb-2"
+            >
               Email address
             </label>
             <input
@@ -83,58 +59,35 @@ const SignUp = () => {
               name="email"
               type="email"
               required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-slate-700 bg-tertiary placeholder-slate-500 text-white focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm"
-              placeholder="Email address"
-              value={formData.email}
-              onChange={handleChange}
+              className="appearance-none relative block w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-800 placeholder-slate-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="sr-only">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-slate-700 bg-tertiary placeholder-slate-500 text-white focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Sending..." : "Send reset link"}
+            </button>
           </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="sr-only">
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-slate-700 bg-tertiary placeholder-slate-500 text-white focus:outline-none focus:ring-accent focus:border-accent focus:z-10 sm:text-sm"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
+          <div className="text-center">
+            <Link
+              to="/auth/signin"
+              className="text-blue-500 hover:text-blue-400"
+            >
+              Back to Sign In
+            </Link>
           </div>
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Creating account..." : "Sign up"}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default SignUp;
+export default ForgotPassword;

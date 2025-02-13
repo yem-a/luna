@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Brain, Sparkles, Rocket, Send } from "lucide-react";
+import { Dialog } from "@headlessui/react";
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <div className="p-6 rounded-lg bg-slate-900/50 flex flex-col items-center text-center">
@@ -10,7 +11,31 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 );
 
 const LandingPage = () => {
-  console.log("LandingPage rendering");
+  const [isOpen, setIsOpen] = useState(false); // State for modal visibility
+  const [email, setEmail] = useState(""); // State for email input
+  const [isSubmitted, setIsSubmitted] = useState(false); // State for form submission status
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("https://formspree.io/f/xvgokalj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        setIsSubmitted(true);
+        setEmail("");
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
   const features = [
     {
       icon: Brain,
@@ -42,7 +67,10 @@ const LandingPage = () => {
             <button className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
               Sign In
             </button>
-            <button className="px-4 py-2 bg-white text-slate-900 rounded-md hover:bg-blue-50 transition-colors">
+            <button
+              className="px-4 py-2 bg-white text-slate-900 rounded-md hover:bg-blue-50 transition-colors"
+              onClick={() => setIsOpen(true)}
+            >
               Get Early Access
             </button>
           </div>
@@ -102,6 +130,47 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Formspree Modal */}
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      >
+        <Dialog.Panel className="bg-white p-6 rounded-lg shadow-lg w-96">
+          <Dialog.Title className="text-lg font-bold text-slate-900">
+            Join the Waitlist
+          </Dialog.Title>
+          <p className="text-slate-600">
+            Enter your email to get notified when we launch.
+          </p>
+
+          {/* Formspree Form */}
+          <form onSubmit={handleSubmit} className="mt-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your email"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+            <button
+              type="submit"
+              className="mt-4 w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+            >
+              {isSubmitted ? "Thank you!" : "Submit"}
+            </button>
+          </form>
+
+          <button
+            className="mt-4 w-full px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Close
+          </button>
+        </Dialog.Panel>
+      </Dialog>
     </div>
   );
 };
