@@ -14,6 +14,7 @@ import ProjectConfirmation from "./pages/app/Projects/project-creation/ProjectCo
 
 // Projects
 import ProjectsHome from "./pages/app/Projects/Home";
+import ProjectDetails from "./pages/app/Projects/ProjectDetails";
 
 // Tasks
 import Tasks from "./pages/app/Tasks/Home";
@@ -46,6 +47,7 @@ const App = () => {
           {/* Project Routes */}
           <Route path="/app/projects" element={<ProjectsHome />} />
           <Route path="/app/projects/home" element={<ProjectsHome />} />
+          <Route path="/app/projects/:id" element={<ProjectDetails />} />
 
           {/* Project Creation Flow */}
           <Route path="/app/project-creation/new" element={<NewProject />} />

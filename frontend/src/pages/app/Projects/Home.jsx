@@ -1,8 +1,9 @@
 import React from "react";
 import { Filter, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProjectCard = ({
+  id,
   title,
   type,
   tasksRemaining,
@@ -10,6 +11,8 @@ const ProjectCard = ({
   priority,
   progress,
 }) => {
+  const navigate = useNavigate();
+
   const getPriorityColor = (priority) => {
     switch (priority.toLowerCase()) {
       case "high":
@@ -21,10 +24,14 @@ const ProjectCard = ({
     }
   };
 
+  const handleClick = () => {
+    navigate(`/app/projects/${id}`);
+  };
+
   return (
-    <div className="w-full">
-      <div className="bg-slate-900 p-4 rounded-lg">
-        <div className="bg-slate-800 p-4 rounded-md h-full">
+    <div className="w-full cursor-pointer" onClick={handleClick}>
+      <div className="bg-slate-900 p-4 rounded-lg hover:bg-slate-800 transition-colors">
+        <div className="bg-slate-800 p-4 rounded-md h-full hover:bg-slate-700 transition-colors">
           <h3 className="text-white text-lg font-semibold">{title}</h3>
           <p className="text-slate-400 text-sm mt-1">{type}</p>
 
@@ -93,6 +100,7 @@ const RecentProjectRow = ({
 const Projects = () => {
   const activeProjects = [
     {
+      id: "finance-dashboard",
       title: "Finance Dashboard",
       type: "2 WEEK MVP",
       tasksRemaining: 12,
@@ -101,6 +109,7 @@ const Projects = () => {
       progress: 50,
     },
     {
+      id: "marketing-website",
       title: "Marketing Website",
       type: "REDESIGN",
       tasksRemaining: 8,
@@ -109,6 +118,7 @@ const Projects = () => {
       progress: 25,
     },
     {
+      id: "api-integration",
       title: "API Integration",
       type: "BACKEND",
       tasksRemaining: 4,
@@ -166,8 +176,8 @@ const Projects = () => {
       <div className="mb-8">
         <h2 className="text-white text-lg mb-4">Active Projects</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {activeProjects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
+          {activeProjects.map((project) => (
+            <ProjectCard key={project.id} {...project} />
           ))}
         </div>
       </div>
