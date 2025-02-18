@@ -1,0 +1,16 @@
+{
+  "name": "luna",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && python -m uvicorn taskCreator:app --reload\"",
+    "install-all": "cd frontend && npm install && cd ../backend && pip install -r requirements.txt"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
