@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FileText,
@@ -10,8 +10,11 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const DocumentOption = ({ icon: Icon, title }) => (
-  <button className="w-full p-4 bg-slate-800 rounded-lg mb-4 text-left hover:bg-slate-700 transition-colors">
+const DocumentOption = ({ icon: Icon, title, onUpload }) => (
+  <button 
+    className="w-full p-4 bg-slate-800 rounded-lg mb-4 text-left hover:bg-slate-700 transition-colors"
+    onClick={onUpload}
+  >
     <div className="flex items-center space-x-3">
       <Icon className="text-slate-400" size={20} />
       <span className="text-white">{title}</span>
@@ -61,14 +64,54 @@ const ContextItem = ({ title, items }) => (
 
 const NewProject = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const [uploadStatus, setUploadStatus] = useState(null);
+  const [recentFile, setRecentFile] = useState(null);
 
   const handleContinue = () => {
     navigate("/app/project-creation/scope-stack");
   };
 
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadStatus('uploading');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:8000/upload/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        setUploadStatus('success');
+        setRecentFile({
+          filename: file.name,
+          uploadTime: 'Uploaded just now'
+        });
+      } else {
+        setUploadStatus('error');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setUploadStatus('error');
+    }
+  };
+
+  const handleProductRequirementsClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const documentTypes = [
     { icon: FileText, title: "📄 Notion / Google Docs" },
-    { icon: Kanban, title: "📋 Product Requirements" },
+    { 
+      icon: Kanban, 
+      title: "📋 Product Requirements",
+      onUpload: handleProductRequirementsClick 
+    },
     { icon: Palette, title: "🎨 Figma / Designs" },
     { icon: Github, title: "💻 GitHub / CodeBase" },
     { icon: Smartphone, title: "📱 Client Brief / Scope" },
@@ -82,6 +125,15 @@ const NewProject = () => {
       <div className="w-64 bg-slate-900 rounded-lg p-4 relative">
         <h2 className="text-white text-lg mb-6">Add Context</h2>
 
+        {/* Hidden file input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+          accept=".doc,.docx,.pdf,.txt,.md"
+        />
+
         {/* Document Type Options */}
         <div className="mb-8">
           {documentTypes.map((doc, index) => (
@@ -89,16 +141,33 @@ const NewProject = () => {
           ))}
         </div>
 
+        {/* Upload Status */}
+        {uploadStatus && (
+          <div className={`mt-2 text-sm ${
+            uploadStatus === 'uploading' ? 'text-blue-400' :
+            uploadStatus === 'success' ? 'text-green-400' :
+            'text-red-400'
+          }`}>
+            {uploadStatus === 'uploading' ? 'Uploading...' :
+             uploadStatus === 'success' ? 'Upload successful!' :
+             'Upload failed'}
+          </div>
+        )}
+
         {/* Divider */}
         <p className="text-slate-400 text-sm mb-6">or paste URL/text</p>
 
         {/* Recent Files */}
         <div className="mb-20">
           <h3 className="text-slate-400 text-sm mb-3">Recent</h3>
-          <RecentFile
-            filename="dashboard-spec.notion"
-            uploadTime="Uploaded 2m ago"
-          />
+          {recentFile ? (
+            <RecentFile
+              filename={recentFile.filename}
+              uploadTime={recentFile.uploadTime}
+            />
+          ) : (
+            <div className="text-slate-400 text-sm">No recent uploads</div>
+          )}
         </div>
 
         {/* Continue Button */}
