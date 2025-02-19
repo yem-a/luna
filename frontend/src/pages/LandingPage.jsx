@@ -176,7 +176,11 @@ const LandingPage = () => {
         {/* Header */}
         <header className="flex justify-between items-center py-6">
           <div className="flex items-center space-x-2">
-            <Brain className="w-6 h-6 text-blue-400" />
+            <img
+              src="/src/assets/logo.png"
+              alt="Luna logo"
+              className="w-10 h-10"
+            />
             <span className="text-white text-xl font-semibold">Luna</span>
           </div>
           <button
@@ -253,7 +257,7 @@ const LandingPage = () => {
         <div className="py-16 text-center">
           <h2 className="text-3xl font-semibold mb-6">💡 Why Luna?</h2>
           <p className="text-slate-400 text-lg">
-            Built by founders who hates manual PM tools.
+            Built by founders who hate manual PM tools.
           </p>
           <p className="text-slate-400 text-lg">
             Eliminates wasted time planning and tracking.
