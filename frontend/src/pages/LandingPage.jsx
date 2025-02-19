@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Brain, Sparkles, Rocket, Send, PlayCircle, X } from "lucide-react";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
+import logo from "../assets/logo.png";
 
 // NEW: Import video
 import lunaDemo from "../assets/Lunademo.mp4";
@@ -176,11 +177,7 @@ const LandingPage = () => {
         {/* Header */}
         <header className="flex justify-between items-center py-6">
           <div className="flex items-center space-x-2">
-            <img
-              src="/src/assets/logo.png"
-              alt="Luna logo"
-              className="w-10 h-10"
-            />
+            <img src={logo} alt="Luna logo" className="w-10 h-10" />
             <span className="text-white text-xl font-semibold">Luna</span>
           </div>
           <button
