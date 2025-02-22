@@ -101,3 +101,30 @@ async def get_uploads():
     for file in os.listdir(UPLOAD_DIR):
         uploads.append(file)
     return {"uploads": uploads}
+
+@app.delete("/del-file/{filename}")
+async def delete_file(filename: str):
+    try:
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        
+        # Check if file exists
+        if not os.path.exists(file_path):
+            raise HTTPException(
+                status_code=404, 
+                detail=f"File '{filename}' not found"
+            )
+            
+        # Delete the file
+        os.remove(file_path)
+        
+        return JSONResponse(
+            status_code=200,
+            content={"message": f"File '{filename}' deleted successfully"}
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"message": f"An error occurred while deleting the file: {str(e)}"}
+        )
