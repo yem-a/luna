@@ -1,28 +1,136 @@
 import React, { useState } from "react";
-import { Brain, Sparkles, Rocket, Send } from "lucide-react";
+import { Brain, Sparkles, Rocket, Send, PlayCircle, X } from "lucide-react";
 import { Dialog } from "@headlessui/react";
+import { motion } from "framer-motion";
+import logo from "../assets/logo.png";
+
+// NEW: Import video
+import lunaDemo from "../assets/Lunademo.mp4";
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
-  <div className="p-6 rounded-lg bg-slate-900/50 flex flex-col items-center text-center">
+  <motion.div
+    className="p-6 rounded-lg bg-slate-900/50 flex flex-col items-center text-center"
+    whileHover={{ scale: 1.05 }}
+  >
     <Icon className="w-8 h-8 text-blue-400 mb-4" />
     <h3 className="text-white text-lg font-semibold mb-2">{title}</h3>
     <p className="text-slate-400 text-sm">{description}</p>
-  </div>
+  </motion.div>
 );
 
+const EmailModal = ({
+  isOpen,
+  setIsOpen,
+  handleSubmit,
+  email,
+  setEmail,
+  isSubmitted,
+}) => (
+  <Dialog
+    open={isOpen}
+    onClose={() => setIsOpen(false)}
+    className="relative z-50"
+  >
+    {/* Backdrop */}
+    <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+
+    {/* Modal position */}
+    <div className="fixed inset-0 flex items-center justify-center p-4">
+      <Dialog.Panel className="w-full max-w-md rounded-2xl bg-slate-900 p-6 border border-slate-800">
+        <div className="flex justify-between items-start mb-4">
+          <Dialog.Title className="text-xl font-semibold text-white">
+            {isSubmitted ? "Thank You! 🎉" : "Get Early Access"}
+          </Dialog.Title>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-1 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+
+        {isSubmitted ? (
+          <div className="text-slate-400">
+            <p>We'll notify you when Luna launches!</p>
+          </div>
+        ) : (
+          <>
+            <Dialog.Description className="text-slate-400 mb-4">
+              Join our waitlist to be notified when we launch. Be among the
+              first to experience AI-powered project management.
+            </Dialog.Description>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400/50 focus:ring-1 focus:ring-blue-400/50 transition-all"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+              >
+                Join Waitlist
+              </button>
+            </form>
+          </>
+        )}
+      </Dialog.Panel>
+    </div>
+  </Dialog>
+);
+
+const VideoPlayer = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const handlePlayClick = () => {
+    setIsPlaying(true);
+  };
+  return (
+    <div className="bg-slate-900/50 rounded-lg aspect-video relative group cursor-pointer overflow-hidden">
+      {!isPlaying ? (
+        <>
+          <video className="w-full h-full object-cover absolute inset-0" muted>
+            <source src={lunaDemo} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent rounded-lg" />
+          <button
+            onClick={handlePlayClick}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <PlayCircle className="w-16 h-16 text-blue-400 group-hover:scale-110 transition-transform" />
+          </button>
+        </>
+      ) : (
+        <video
+          className="w-full h-full object-cover rounded-lg"
+          autoPlay
+          controls
+          playsInline
+        >
+          <source src={lunaDemo} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </div>
+  );
+};
+
 const LandingPage = () => {
-  const [isOpen, setIsOpen] = useState(false); // State for modal visibility
-  const [email, setEmail] = useState(""); // State for email input
-  const [isSubmitted, setIsSubmitted] = useState(false); // State for form submission status
+  const [isOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("https://formspree.io/f/xvgokalj", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
       if (response.ok) {
@@ -36,85 +144,79 @@ const LandingPage = () => {
     }
   };
 
-  const features = [
-    {
-      icon: Brain,
-      title: "AI-Powered Planning",
-      description: "Instant project clarity",
-    },
+  const steps = [
     {
       icon: Sparkles,
-      title: "Ideas to Tasks",
-      description: "Structured in minutes",
+      title: "1️⃣ Describe Your Idea",
+      description: "Tell Luna what you're building.",
+    },
+    {
+      icon: Brain,
+      title: "2️⃣ Watch AI Generate Tasks",
+      description: "Instant, structured project breakdown.",
     },
     {
       icon: Rocket,
-      title: "Ship Faster",
-      description: "Automated workflow updates",
+      title: "3️⃣ Ship Faster",
+      description: "Luna auto-updates workflows as you progress.",
     },
   ];
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-white">
+      <EmailModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSubmit={handleSubmit}
+        email={email}
+        setEmail={setEmail}
+        isSubmitted={isSubmitted}
+      />
+
       <div className="max-w-7xl mx-auto px-8">
         {/* Header */}
         <header className="flex justify-between items-center py-6">
           <div className="flex items-center space-x-2">
-            <Brain className="w-6 h-6 text-blue-400" />
+            <img src={logo} alt="Luna logo" className="w-10 h-10" />
             <span className="text-white text-xl font-semibold">Luna</span>
           </div>
-          <div className="flex space-x-4">
-            <button className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
-              Sign In
-            </button>
-            <button
-              className="px-4 py-2 bg-white text-slate-900 rounded-md hover:bg-blue-50 transition-colors"
-              onClick={() => setIsOpen(true)}
-            >
-              Get Early Access
-            </button>
-          </div>
+          <button
+            className="px-4 py-2 bg-white text-slate-900 rounded-md hover:bg-blue-50"
+            onClick={() => setIsOpen(true)}
+          >
+            Get Early Access
+          </button>
         </header>
 
         {/* Hero Section */}
-        <div className="text-center py-20">
-          <h1 className="text-6xl font-bold mb-4 leading-tight">
-            Ship your projects faster - idea to execution
-            <br />
-            in minutes
+        <div className="text-center py-16">
+          <h1 className="text-5xl font-bold mb-4">
+            From Idea to Shipped Code - Your AI PM
           </h1>
-          <p className="text-slate-400 text-xl mb-12">
-            For developers and product teams who want to focus on building, not
-            managing.
+          <p className="text-slate-400 text-xl mb-8">
+            Smart project planning. Zero busywork. Let AI handle managing
+            projects while you focus on building.
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {features.map((feature) => (
-              <FeatureCard key={feature.title} {...feature} />
-            ))}
-          </div>
-
-          {/* Chat Box */}
-          <div className="max-w-2xl mx-auto bg-slate-900/80 rounded-xl overflow-hidden border border-slate-800/50">
-            {/* Chat Header */}
+          <button
+            className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+            onClick={() => setIsOpen(true)}
+          >
+            Join 100+ early testers
+          </button>
+          {/* AI Chat Section */}
+          <div className="max-w-2xl mx-auto bg-slate-900/80 rounded-xl overflow-hidden border border-slate-800/50 mt-6">
             <div className="px-4 py-3 flex items-center gap-2 border-b border-slate-800/50">
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               <span className="text-slate-400 text-sm">Luna AI</span>
             </div>
-
-            {/* Chat Message */}
-            <div className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-blue-400" />
-                </div>
-                <h3 className="text-lg text-white font-medium">
-                  What are you building today?
-                </h3>
+            <div className="p-4 flex items-start gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Sparkles className="w-5 h-5 text-blue-400" />
               </div>
+              <h3 className="text-lg text-white font-medium">
+                What are you building today?
+              </h3>
             </div>
-
-            {/* Input Section */}
             <div className="p-4 border-t border-slate-800/50">
               <div className="relative">
                 <input
@@ -129,48 +231,44 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Formspree Modal */}
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-      >
-        <Dialog.Panel className="bg-white p-6 rounded-lg shadow-lg w-96">
-          <Dialog.Title className="text-lg font-bold text-slate-900">
-            Join the Waitlist
-          </Dialog.Title>
-          <p className="text-slate-600">
-            Enter your email to get notified when we launch.
+        {/* How It Works - Consolidated Section */}
+        <div className="py-16 text-center">
+          <h2 className="text-3xl font-semibold mb-12">🔮 How Luna Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Left Side: Steps */}
+            <div className="space-y-8">
+              {steps.map((step, index) => (
+                <FeatureCard key={step.title} {...step} />
+              ))}
+            </div>
+
+            {/* Right Side: Video Demo */}
+            <div className="mt-24">
+              <VideoPlayer />
+            </div>
+          </div>
+        </div>
+
+        {/* Why Luna */}
+        <div className="py-16 text-center">
+          <h2 className="text-3xl font-semibold mb-6">💡 Why Luna?</h2>
+          <p className="text-slate-400 text-lg">
+            Built by founders who hate manual PM tools.
           </p>
+          <p className="text-slate-400 text-lg">
+            Eliminates wasted time planning and tracking.
+          </p>
+          <p className="text-slate-400 text-lg">
+            Perfect for indie hackers, dev teams, and product builders.
+          </p>
+        </div>
 
-          {/* Formspree Form */}
-          <form onSubmit={handleSubmit} className="mt-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-            <button
-              type="submit"
-              className="mt-4 w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
-            >
-              {isSubmitted ? "Thank you!" : "Submit"}
-            </button>
-          </form>
-
-          <button
-            className="mt-4 w-full px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Close
-          </button>
-        </Dialog.Panel>
-      </Dialog>
+        {/* Privacy & Terms */}
+        <div className="py-16 text-center text-slate-400 text-sm">
+          <p>Privacy Policy | Terms of Service</p>
+        </div>
+      </div>
     </div>
   );
 };
